@@ -16,5 +16,5 @@ After installing the library, use `<DashPlayer>` component. `DashPlayer` require
 
 ## Getting Started
 ```
-npm install Dash-studio-video-player
+npm i dash-studio-player
 ```
