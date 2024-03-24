@@ -1,5 +1,6 @@
 
 // import { DashPlayer } from '../'
+import { DashPlayer } from '../lib/main'
 import './App.css'
 
 function App() {
@@ -9,7 +10,7 @@ function App() {
         <h1>Hello there...</h1>
         {/* <VideoPlayer /> */}
         <div style={{ width: "500px" }}>
-          {/* <DashPlayer mpdUrl='http://localhost:9000/idan/89e31e46-f77a-48f2-bf35-0b81d969211b/pexels-eberhard-grossgasteiger-10079385.mpd' /> */}
+          <DashPlayer mpdUrl='http://localhost:9000/idan/89e31e46-f77a-48f2-bf35-0b81d969211b/pexels-eberhard-grossgasteiger-10079385.mpd' />
         </div>
 
       </main>
