@@ -1,4 +1,4 @@
-import Box from "@mui/material/Box";
+// Mui removed
 import { useRef, useEffect } from "react";
 import { selectBuffer, selectProgressValue, setBuffer, setProgressValue } from "../../features/videoPlayer/videoPlayerSlice";
 import eventEmitter from "./utils/eventEmitter";
@@ -26,7 +26,7 @@ const MovieProgressbar = ({ player, videoElement, src }: MovieProgressbarProps) 
         function updateBufferHandler() {
             try {
                 const bufferRange = player.getBufferedInfo().total[0];
-                if(!bufferRange || !bufferRange.end){
+                if (!bufferRange || !bufferRange.end) {
                     return;
                 }
                 const percentSlice = 100 / duration.current;
@@ -73,25 +73,27 @@ const MovieProgressbar = ({ player, videoElement, src }: MovieProgressbarProps) 
             const left = parentRect.left;
             const width = parentRect.width;
             const position = event.clientX - left;
-            const percent = position * (100/width);
+            const percent = position * (100 / width);
             setPosition(percent);
         }
     }
 
     return (
-        <Box sx={{ height: "4px", padding: { xs: "0px 20px", sm: "10px 20px", md: "20px" } }}>
-            <Box style={{ position: "relative", height: "4px" }}>
+        <div
+        className=" py-0 px-5 sm:py-3 sm:px-5 md:p-5"
+            style={{ height: "4px" }}>
+            <div style={{ position: "relative", height: "4px" }}>
                 {/* Buffer line */}
-                <Box style={{
+                <div style={{
                     height: "4px",
                     backgroundColor: "rgba(255,255,255,.8)",
                     width: buffer + "%",
                     position: "absolute",
                     top: "0",
                     left: "0",
-                }}></Box>
+                }}></div>
                 {/* Track line */}
-                <Box
+                <div
                     style={{
                         height: "4px",
                         backgroundColor: "rgba(255,255,255,.3)",
@@ -99,32 +101,31 @@ const MovieProgressbar = ({ player, videoElement, src }: MovieProgressbarProps) 
                         position: "absolute",
                         top: "0",
                         left: "0",
-                    }}></Box>
+                    }}></div>
                 {/* Time progress line */}
-                <Box style={{
+                <div style={{
                     height: "4px",
                     backgroundColor: "#0774e8",
                     width: progressValue + "%",
                     position: "absolute",
                     top: "0px",
                     left: "0",
-                }}></Box>
+                }}></div>
 
-                <Box
+                <div
                     onClick={handleTrackClick}
-                    component={"div"}
                     ref={clickableTrack}
-                    sx={{
+                    style={{
                         height: "12px",
                         backgroundColor: "rgba(255,0,0,0)",
                         width: "100%",
-                        cursor:"pointer",
+                        cursor: "pointer",
                         position: "absolute",
                         top: "-4px",
                         left: "0",
-                    }}></Box>
-            </Box>
-        </Box>
+                    }}></div>
+            </div>
+        </div>
 
 
     )

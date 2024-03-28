@@ -1,9 +1,8 @@
+// Mui removed
 import { PropsWithChildren, useCallback, useEffect, useRef } from "react";
 import VideoLoaderAnimation from "./VideoLoaderAnimation";
 import { selectFullScreen, selectPlaying, setFullScreen, setPlaying } from "../../features/videoPlayer/videoPlayerSlice";
-import { AspectRatioAlg, setFrameAspectRatio } from "./utils/general-utils";
 import useFullScreenEvent from "./hooks/useFullScreenEvent";
-import Box from "@mui/material/Box";
 import eventEmitter from "./utils/eventEmitter";
 import MobileMuteButton from "./MobileMuteButton";
 import { useAppSelector, useAppDispatch } from "../../lib-hooks/hooks";
@@ -28,7 +27,7 @@ const VideoPlayerFrame = ({ mpdSrc, videoElement, children }: VideoPlayerFramePr
 
     const mousePosition = useRef<{ x: number, y: number } | null>(null);
 
-    const updateFrameAspectRatio = useCallback((htmlElement: HTMLElement, isFullscreen: boolean = false) => {
+    const updateFrameAspectRatio = useCallback((_: HTMLElement, isFullscreen: boolean = false) => {
         if (!videoContainerRef.current) {
             return;
         }
@@ -41,10 +40,12 @@ const VideoPlayerFrame = ({ mpdSrc, videoElement, children }: VideoPlayerFramePr
         }
         videoElement.style.position = "static";
         videoElement.style.top = `0px`;
-        const width = videoContainerRef.current.offsetWidth;
-
-
-        setFrameAspectRatio(htmlElement, width, AspectRatioAlg.W16H9);
+        // const width = videoContainerRef.current.offsetWidth;
+        videoElement.style.width = "100%";
+        videoElement.style.height = "auto";
+        videoElement.style.aspectRatio = "16/9";
+        
+        // setFrameAspectRatio(htmlElement, width, AspectRatioAlg.W16H9);
     }, [videoElement.style])
 
     useEffect(() => {
@@ -103,7 +104,7 @@ const VideoPlayerFrame = ({ mpdSrc, videoElement, children }: VideoPlayerFramePr
                 const distanceX = Math.max(mousePosition.current.x, event.clientX) - Math.min(mousePosition.current.x, event.clientX);
                 const distanceY = Math.max(mousePosition.current.y, event.clientY) - Math.min(mousePosition.current.y, event.clientY);
                 mousePosition.current = null;
-                if (Math.max(distanceX, distanceY) > 70) {
+                if (Math.max(distanceX, distanceY) > 30) {
                     eventEmitter.emit("mouseMoveFrame", distanceX);
                 }
             }, 50)
@@ -111,10 +112,9 @@ const VideoPlayerFrame = ({ mpdSrc, videoElement, children }: VideoPlayerFramePr
     }
 
     return (
-        <>
-            <div ref={playerContainerRef} style={{ position: "relative" }}>
-                <Box sx={{ position: 'relative' }} component={"div"}>
-                    <div style={{ backgroundColor: "#000000" }} ref={videoContainerRef}></div>
+        <div ref={playerContainerRef} className=" relative aspect-video" >
+                <div style={{ position: 'relative' }} >
+                    <div className=" bg-black w-full" ref={videoContainerRef}></div>
                     <div
                         onClick={() => togglePlayVideo()}
                         onMouseMove={fullscreenMouseMove}
@@ -133,15 +133,14 @@ const VideoPlayerFrame = ({ mpdSrc, videoElement, children }: VideoPlayerFramePr
                         <VideoLoaderAnimation src={mpdSrc} videoElement={videoElement} />
 
                         {/* Add mute icons to top right here */}
-                        <Box sx={{ position: "absolute", top: "5px", right: "10px" }}>
+                        <div style={{ position: "absolute", top: "5px", right: "10px" }}>
                             <MobileMuteButton />
-                        </Box>
+                        </div>
                     </div>
 
-                </Box>
+                </div>
                 {children}
             </div>
-        </>
     )
 }
 

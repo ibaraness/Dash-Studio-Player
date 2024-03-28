@@ -1,7 +1,4 @@
-// MUI direct checked
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-
+// Mui removed
 import { useEffect, useRef } from "react";
 import { parseSecondsToTimeString } from "./utils/general-utils";
 import eventEmitter from "./utils/eventEmitter";
@@ -50,12 +47,12 @@ const VideoTimer = ({ video: videoElement, src }: VideoTimerProps) => {
     },[src])
 
     return (
-        <Box sx={{ px: 2 }}>
-            <Typography sx={{ typography: {sm:'body2', xs:'body1'}, 'whiteSpace':"nowrap"}} component={"span"} color={"white"}>
-                {parsedTime}
+        <div className=" px-2">
+            <span className=" text-xs sm:text-sm whitespace-nowrap text-white">
+            {parsedTime}
                 / {videoDuration}
-            </Typography>
-        </Box>
+            </span>
+        </div>
     )
 }
 

@@ -1,24 +1,21 @@
-// MUI direct checked
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Grid from "@mui/material/Grid";
-import IconButton from "@mui/material/IconButton";
-import Slider from "@mui/material/Slider";
-
+// Mui removed
 import VideoTimer from "./VideoTimer";
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
-import VolumeUpIcon from '@mui/icons-material/VolumeUp';
-import VolumeOffIcon from '@mui/icons-material/VolumeOff';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
-import SettingsIcon from '@mui/icons-material/Settings';
-import QualitySwitcher from "./QualitySwitcher";
+
+// Hero Icons
+import PlayIcon from '@heroicons/react/24/solid/PlayIcon';
+import PauseIcon from '@heroicons/react/24/solid/PauseIcon';
+import SpeakerWaveIcon from '@heroicons/react/24/solid/SpeakerWaveIcon';
+import SpeakerXMarkIcon from '@heroicons/react/24/solid/SpeakerXMarkIcon';
+import ArrowsPointingInIcon from '@heroicons/react/24/solid/ArrowsPointingInIcon';
+import ArrowsPointingOutIcon from '@heroicons/react/24/solid/ArrowsPointingOutIcon';
+import Cog6ToothIcon from '@heroicons/react/24/solid/Cog6ToothIcon';
+
 import { selectAutoResolution, selectFullScreen, selectMute, selectPlaying, selectSelectedTrack, selectSettingIsOpen, selectShowQualityMenu, selectVolume, setFullScreen, setMute, setPlaying, setSettingIsOpen, setShowQualityMenu, setVolume } from "../../features/videoPlayer/videoPlayerSlice";
 import { useEffect } from "react";
 import eventEmitter from "./utils/eventEmitter";
 import { VideoEvent } from "./hooks/useVideoEventEmitter";
 import { useAppSelector, useAppDispatch } from "../../lib-hooks/hooks";
+import ClickableIcon from "./ClickableIcon";
 
 export interface MoviePlayerBarProps {
     videoElement: HTMLVideoElement,
@@ -26,9 +23,8 @@ export interface MoviePlayerBarProps {
     src: string
 }
 
-const MoviePlayerBar = ({ videoElement, src, player }: MoviePlayerBarProps) => {
+const MoviePlayerBar = ({ videoElement, src }: MoviePlayerBarProps) => {
 
-    // const [playing, setPlaying] = useState<boolean>(false);
     const playing = useAppSelector(selectPlaying);
     const fullScreen = useAppSelector(selectFullScreen);
     const volume = useAppSelector(selectVolume);
@@ -39,7 +35,7 @@ const MoviePlayerBar = ({ videoElement, src, player }: MoviePlayerBarProps) => {
     const settingIsOpen = useAppSelector(selectSettingIsOpen);
 
     useEffect(() => {
-        function setPlayingState(){
+        function setPlayingState() {
             dispatch(setPlaying(false));
         }
         const listener = eventEmitter.addListener(VideoEvent.Ended, setPlayingState);
@@ -58,10 +54,8 @@ const MoviePlayerBar = ({ videoElement, src, player }: MoviePlayerBarProps) => {
         dispatch(setFullScreen(!fullScreen));
     }
 
-    const handleVolumeChange = (_event: Event, newValue: number | number[]) => {
-        if (typeof newValue === "number") {
-            dispatch(setVolume(newValue));
-        }
+    const handleVolumeChange = (value: number) => {
+        dispatch(setVolume(value));
     }
 
     const toggleMute = () => {
@@ -69,64 +63,79 @@ const MoviePlayerBar = ({ videoElement, src, player }: MoviePlayerBarProps) => {
     }
 
     const toggleQualityMenu = () => {
+        dispatch(setSettingIsOpen(false));
         dispatch(setShowQualityMenu(!showQualityMenu));
+        eventEmitter.emit('menuIsOpen', !settingIsOpen);
     }
 
     const toggleSettings = () => {
         //different behaviour for mobile and destop
         dispatch(setSettingIsOpen(!settingIsOpen));
+        dispatch(setShowQualityMenu(false));
+        eventEmitter.emit('menuIsOpen', !settingIsOpen);
     }
 
     return (
-        <Grid container alignContent={"center"} paddingLeft={1} paddingRight={1} justifyContent={"center"} height={"100%"}>
-            <Grid display={"flex"} alignItems={"center"} flexDirection={"row"} item xs={8}>
-                <IconButton sx={{display:{xs:"flex", sm:"flex"}}}  onClick={() => togglePlayVideo()} aria-label="play">
-                    {!playing
-                        ? <PlayArrowIcon sx={{ color: "white" }} />
-                        : <PauseIcon sx={{ color: "white" }} />
-                    }
-
-                </IconButton>
-                <IconButton sx={{display:{xs:"none", sm:"flex"}}} onClick={() => toggleMute()} aria-label="volume">
-                    {
-                        mute
-                            ? <VolumeOffIcon sx={{ color: "white" }} />
-                            : <VolumeUpIcon sx={{ color: "white" }} />
-                    }
-
-                </IconButton>{
-                    !mute &&
-                    <Slider sx={{display:{xs:"none", md:"block"}, marginLeft: 0, width: "100px", color: "white" }} aria-label="Volume" value={volume} onChange={handleVolumeChange} />
-                }
-                <VideoTimer video={videoElement} src={src}></VideoTimer>
-            </Grid>
-            <Grid display={"flex"} alignItems={"center"} flexDirection={"row-reverse"} item xs={4}>
-                <IconButton onClick={() => toggleFullScreen()} aria-label="fullscreen">
-                    {
-                        !fullScreen
-                            ? <FullscreenIcon sx={{ color: "white" }} />
-                            : <FullscreenExitIcon sx={{ color: "white" }} />
-                    }
-
-
-                </IconButton>
-                <IconButton onClick={() =>  toggleSettings()} sx={{ position: "relative" }} aria-label="settings">
-                    <SettingsIcon sx={{ color: "white" }} />
-                </IconButton>
-                <Box sx={{ position: "relative" }}>
-                    <Button sx={{display:{xs:"none", md:"inline-block"}, color:"white"}} onClick={() => toggleQualityMenu()} >
-                        {selectedTrack.title}
-                        {
-                            selectedTrack.id === -1 && `(${autoResolution})`
+        <>
+            {/* Tailwind */}
+            <div className=" flex pl-2 pr-2 justify-between items-center h-full">
+                <div className="flex items-center w-full">
+                    <ClickableIcon onClick={() => togglePlayVideo()} aria-label="play">
+                        {!playing
+                            ? <PlayIcon className=" text-white w-5 h-5" />
+                            : <PauseIcon className=" text-white w-5 h-5" />
                         }
-                    </Button>
+
+                    </ClickableIcon>
+                    <ClickableIcon
+                        className=" hidden sm:flex"
+                        onClick={() => toggleMute()} aria-label="volume">
+                        {
+                            mute
+                                ? <SpeakerXMarkIcon className=" text-white w-5 h-5" />
+                                : <SpeakerWaveIcon className=" text-white w-5 h-5" />
+                        }
+
+                    </ClickableIcon>
                     {
-                        showQualityMenu && <QualitySwitcher player={player} src={src}></QualitySwitcher>
+                        !mute &&
+                        <input
+                            className=" hidden sm:block w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer range-sm dark:bg-gray-700"
+                            type="range" aria-label="Volume" min="0" max="100" value={volume} onChange={(event) => handleVolumeChange(+event.target.value)} step="1" />
+    
                     }
-                </Box>
-            </Grid>
-        </Grid>
+                    <VideoTimer video={videoElement} src={src}></VideoTimer>
+                </div>
+                <div className=" flex flex-row-reverse items-center w-full">
+                    <ClickableIcon  onClick={() => toggleFullScreen()} aria-label="fullscreen">
+                        {
+                            !fullScreen
+                                ? <ArrowsPointingOutIcon className=" text-white w-5 h-5" />
+                                : <ArrowsPointingInIcon className=" text-white w-5 h-5" />
+                        }
+
+
+                    </ClickableIcon>
+                    <ClickableIcon onClick={() => toggleSettings()} className=" relative" aria-label="settings">
+                        <Cog6ToothIcon className=" text-white w-5 h-5" />
+                    </ClickableIcon>
+                    <div>
+                        <div
+                            role="button"
+                            className=" hidden md:inline-block text-white uppercase text-sm font-semibold"
+                            onClick={() => toggleQualityMenu()} >
+                            {selectedTrack.title}
+                            {
+                                selectedTrack.id === -1 && `(${autoResolution})`
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+
     )
 }
 
 export default MoviePlayerBar;
+

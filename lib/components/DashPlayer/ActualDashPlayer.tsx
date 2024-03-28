@@ -1,20 +1,21 @@
+// Mui removed
 import { useCallback, useEffect, useRef, useState } from 'react';
-import Box from '@mui/material/Box';
 import useShakaVideoPlayer from './hooks/useShakaVideoPlayer';
 import MovieProgressbar from './MovieProgressbar';
 import MoviePlayerBar from './MoviePlayerBar';
-import { selectFullScreen, selectLoaded, selectMute, selectPlaying, selectSelectedTrack, selectVolume, setAutoResolution, setLoaded, setPlaying, setSelectedTrack, setShowQualityMenu, unloadAll } from '../../features/videoPlayer/videoPlayerSlice';
+import { selectFullScreen, selectLoaded, selectMute, selectPlaying, selectSelectedTrack, selectShowQualityMenu, selectVolume, setAutoResolution, setLoaded, setPlaying, setSelectedTrack, setShowQualityMenu, unloadAll } from '../../features/videoPlayer/videoPlayerSlice';
 import useShakaABR from './hooks/useShakaABR';
 import eventEmitter from './utils/eventEmitter';
 import useVideoEventEmitter, { VideoEvent } from './hooks/useVideoEventEmitter';
 import VideoPlayerFrame from './VideoPlayerFrame';
 import { useAppDispatch, useAppSelector } from '../../lib-hooks/hooks';
 import SettingMenu from './settingMenu/SettingMenu';
+import QualitySwitcher from './QualitySwitcher';
 
 interface ActualDashPlayerProps {
     mpdSrc: string;
 }
-const ActualDashPlayer = ({mpdSrc}: ActualDashPlayerProps) => {
+const ActualDashPlayer = ({ mpdSrc }: ActualDashPlayerProps) => {
 
     const loaded = useAppSelector(selectLoaded);
 
@@ -28,6 +29,7 @@ const ActualDashPlayer = ({mpdSrc}: ActualDashPlayerProps) => {
 
     const dispatch = useAppDispatch();
 
+    const showQualityMenu = useAppSelector(selectShowQualityMenu);
 
     const fullScreen = useAppSelector(selectFullScreen);
 
@@ -41,14 +43,26 @@ const ActualDashPlayer = ({mpdSrc}: ActualDashPlayerProps) => {
     // A flag to set the hideMenuDelay function as active to avoid calling it more than once when active
     const isMenuHideDelayActive = useRef(false);
 
+    // Check whether menu is active durring fullscreen to avoid hiding it while active 
+    const isMenuOpenFullscreen = useRef(false);
+
     // Start listening for video events
     useVideoEventEmitter(videoElement);
+
+    const initialized = useRef(false);
+    const previousSrc = useRef(mpdSrc);
 
     // Load dash mpd file to shaka-player and set video to autoplay
     useEffect(() => {
         const loadDashVideo = async () => {
             try {
-                if(!player.getMediaElement()){
+
+                if (initialized.current && previousSrc.current === mpdSrc){
+                    return;
+                }
+                initialized.current = true;
+                previousSrc.current = mpdSrc;
+                if (!player.getMediaElement()) {
                     await player.attach(videoElement);
                 }
                 // Load MPD stream manifest file of video
@@ -74,21 +88,21 @@ const ActualDashPlayer = ({mpdSrc}: ActualDashPlayerProps) => {
             // videoElement.setAttribute("controls", "true");
             videoElement.setAttribute("autoplay", "true");
             loadDashVideo();
-        } 
-        else if(!mpdSrc && player) {
+        }
+        else if (!mpdSrc && player) {
             unloadVideo();
         }
     }, [mpdSrc, player, videoElement, dispatch]);
 
     // Toggle auto ABR and set auto bitrate or user select 
-    useShakaABR(selectedTrack, player);  
+    useShakaABR(selectedTrack, player);
 
     useEffect(() => {
         function updateAutoABR() {
             if (videoElement.readyState === 4 && mpdSrc) {
                 if (selectedTrack.id === -1) {
                     /* eslint @typescript-eslint/no-explicit-any: "off" */
-                    const active = player.getVariantTracks().find((track:any) => track.active);
+                    const active = player.getVariantTracks().find((track: any) => track.active);
                     const resolution = Math.min(active?.width || 0, active?.height || 0);
                     dispatch(setAutoResolution(resolution > 0 ? `${resolution}p` : ""));
                 }
@@ -118,12 +132,12 @@ const ActualDashPlayer = ({mpdSrc}: ActualDashPlayerProps) => {
         videoElement.volume = volume / 100;
     }, [volume, videoElement]);
 
-    
+
 
     const hideMenuDelay = useCallback((delay = 1000) => {
         setTimeout(() => {
             isMenuHideDelayActive.current = false;
-            if (localFullScreenState.current) {
+            if (localFullScreenState.current && !isMenuOpenFullscreen.current) {
                 setIsHidePlayerMenu(true);
                 document.body.style.cursor = 'none';
             }
@@ -150,11 +164,17 @@ const ActualDashPlayer = ({mpdSrc}: ActualDashPlayerProps) => {
             }
         }
 
+        function setMenuIsActive(isMenuActive: boolean){
+            isMenuOpenFullscreen.current = isMenuActive;
+        }
+
         const fullScreenListener = eventEmitter.addListener('fullscreenchange', fullScreenHandler);
         const mouseListener = eventEmitter.addListener('mouseMoveFrame', showMenuAgain);
+        const menuListener = eventEmitter.addListener('menuIsOpen', setMenuIsActive);
         return () => {
             fullScreenListener.remove();
             mouseListener.remove();
+            menuListener.remove();
         }
     }, [fullScreen, hideMenuDelay]);
 
@@ -166,28 +186,32 @@ const ActualDashPlayer = ({mpdSrc}: ActualDashPlayerProps) => {
         <VideoPlayerFrame mpdSrc={mpdSrc} videoElement={videoElement}>
             {
                 loaded &&
-                <Box sx={{
+                <div style={{
                     width: "100%",
                     height: "auto",
                     position: "absolute",
                     zIndex: "99",
                     left: "0px",
                     bottom: "0px",
-                    pb: { sm: "10px", xs: "0" },
                     background: "linear-gradient(rgba(0,0,0,0), #000000)"
-                }}>
+                }}
+                    className=' pb-0 sm:pb-3'
+                >
                     <div style={{ opacity: isHidePlayerMenu ? 0 : 1, transition: "opacity .5s" }}>
                         <>
-                            <Box sx={{ px: 0 }}>
+                            <div className=' px-0'>
                                 <MovieProgressbar src={mpdSrc} player={player} videoElement={videoElement}></MovieProgressbar>
-                            </Box>
+                            </div>
                             <MoviePlayerBar player={player} videoElement={videoElement} src={mpdSrc}></MoviePlayerBar>
                         </>
                     </div>
 
-                </Box>
+                </div>
             }
             <SettingMenu player={player} src={mpdSrc} />
+            {
+                showQualityMenu && <QualitySwitcher player={player} src={mpdSrc}></QualitySwitcher>
+            }
         </VideoPlayerFrame>
     )
 }

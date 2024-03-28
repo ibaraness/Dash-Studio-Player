@@ -1,6 +1,5 @@
 import { useRef, useEffect } from "react";
-/* eslint @typescript-eslint/no-var-requires: "off" */
-const shaka = require('shaka-player/dist/shaka-player.compiled.js');
+import { shaka } from "../shaka/shaka";
 
 export default function useShakaVideoPlayer() {
 
