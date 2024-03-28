@@ -8,7 +8,7 @@ The app had a peer dependancy on `react` and `react-dom` version `^18.2.0` and a
 
 ### Built With
 * ReactJS
-* Material-UI
+* TailwindCss
 * Shaka-play
 
 ## Getting Started
