@@ -10,7 +10,7 @@ import ArrowsPointingInIcon from '@heroicons/react/24/solid/ArrowsPointingInIcon
 import ArrowsPointingOutIcon from '@heroicons/react/24/solid/ArrowsPointingOutIcon';
 import Cog6ToothIcon from '@heroicons/react/24/solid/Cog6ToothIcon';
 
-import { selectAutoResolution, selectFullScreen, selectMute, selectPlaying, selectSelectedTrack, selectSettingIsOpen, selectShowQualityMenu, selectVolume, setFullScreen, setMute, setPlaying, setSettingIsOpen, setShowQualityMenu, setVolume } from "../../features/videoPlayer/videoPlayerSlice";
+import { selectAutoResolution, selectFullScreen, selectIsMobileMode, selectMute, selectPlaying, selectSelectedTrack, selectSettingIsOpen, selectShowQualityMenu, selectVolume, setFullScreen, setMute, setPlaying, setSettingIsOpen, setShowQualityMenu, setVolume } from "../../features/videoPlayer/videoPlayerSlice";
 import { useEffect } from "react";
 import eventEmitter from "./utils/eventEmitter";
 import { VideoEvent } from "./hooks/useVideoEventEmitter";
@@ -33,6 +33,7 @@ const MoviePlayerBar = ({ videoElement, src }: MoviePlayerBarProps) => {
     const showQualityMenu = useAppSelector(selectShowQualityMenu);
     const autoResolution = useAppSelector(selectAutoResolution);
     const settingIsOpen = useAppSelector(selectSettingIsOpen);
+    const isMobileMode = useAppSelector(selectIsMobileMode);
 
     useEffect(() => {
         function setPlayingState() {
@@ -98,9 +99,9 @@ const MoviePlayerBar = ({ videoElement, src }: MoviePlayerBarProps) => {
 
                     </ClickableIcon>
                     {
-                        !mute &&
+                        !isMobileMode && !mute &&
                         <input
-                            className=" hidden sm:block w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer range-sm dark:bg-gray-700"
+                            className=" hidden sm:block w-full max-w-20 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer range-sm dark:bg-gray-700"
                             type="range" aria-label="Volume" min="0" max="100" value={volume} onChange={(event) => handleVolumeChange(+event.target.value)} step="1" />
     
                     }
@@ -122,6 +123,7 @@ const MoviePlayerBar = ({ videoElement, src }: MoviePlayerBarProps) => {
                     <div>
                         <div
                             role="button"
+                            style={{display: isMobileMode ? "none" : "block" }}
                             className=" hidden md:inline-block text-white uppercase text-sm font-semibold"
                             onClick={() => toggleQualityMenu()} >
                             {selectedTrack.title}

@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-import videoPlayerSlice from '../features/videoPlayer/videoPlayerSlice';
-import { VideoPlayState } from '../components/DashPlayer/store/state';
+import videoPlayerSlice, { VideoPlayState } from '../features/videoPlayer/videoPlayerSlice';
+
 
 export const store = configureStore<{videoPlayer: VideoPlayState}>({
     reducer: {

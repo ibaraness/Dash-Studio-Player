@@ -1,7 +1,7 @@
 // Mui removed
 import { PropsWithChildren, useCallback, useEffect, useRef } from "react";
 import VideoLoaderAnimation from "./VideoLoaderAnimation";
-import { selectFullScreen, selectPlaying, setFullScreen, setPlaying } from "../../features/videoPlayer/videoPlayerSlice";
+import { selectFullScreen, selectPlaying, setFullScreen, setIsMobileMode, setPlaying } from "../../features/videoPlayer/videoPlayerSlice";
 import useFullScreenEvent from "./hooks/useFullScreenEvent";
 import eventEmitter from "./utils/eventEmitter";
 import MobileMuteButton from "./MobileMuteButton";
@@ -110,6 +110,27 @@ const VideoPlayerFrame = ({ mpdSrc, videoElement, children }: VideoPlayerFramePr
             }, 50)
         }
     }
+
+    useEffect(() =>{
+        if(!playerContainerRef.current){
+            return;
+        }
+        const resizeObserver = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+                if (entry.contentBoxSize) {
+                    const contentBoxSize = entry.contentBoxSize[0];
+                    dispatch(setIsMobileMode(contentBoxSize.inlineSize < 500))
+                }
+            }
+        });
+        resizeObserver.observe(playerContainerRef.current);
+        return () => {
+            if(playerContainerRef.current){
+                resizeObserver.unobserve(playerContainerRef.current);
+            }
+            
+        }
+    });
 
     return (
         <div ref={playerContainerRef} className=" relative aspect-video" >

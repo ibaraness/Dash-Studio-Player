@@ -1,7 +1,7 @@
 
-import { DashPlayer } from '../'
+// import { DashPlayer } from '../'
 import { useState } from 'react'
-// import { DashPlayer } from "../dist/components/DashPlayer"
+import { DashPlayer } from "../lib/main"
 
 const videoList = [
   {
@@ -22,17 +22,18 @@ const videoList = [
 function App() {
 
   const [selected, setSelected] = useState(videoList[0]);
+  const [width, setWidth] = useState("300px");
 
   const items = videoList.map(video => {
     return (
       <li style={{
-        padding: "10px", 
+        padding: "10px",
         backgroundColor: selected === video ? "black" : "#5bb7ff",
-        color:"#fff",
-        marginBottom:"10px",
-        borderRadius:"5px"
-        }} key={video.id}>
-        <button onClick={()=>{setSelected(video)}}>{video.title}</button>
+        color: "#fff",
+        marginBottom: "10px",
+        borderRadius: "5px"
+      }} key={video.id}>
+        <button onClick={() => { setSelected(video) }}>{video.title}</button>
       </li>
     )
   })
@@ -42,14 +43,31 @@ function App() {
       <main className=' flex flex-col w-full justify-center items-center'>
         <h1 className=' text-3xl'>Hello there...</h1>
         {/* <VideoPlayer /> */}
-        <div className=' w-full sm:max-w-[600px]'>
+        <div style={{ maxWidth: width, marginBottom: "10px", width: "100%" }}>
           <DashPlayer mpdUrl={selected.src} />
         </div>
-        <ul style={{marginTop:"20px"}}>
-          {
-            items
-          }
-        </ul>
+
+        <div className=' flex'>
+          <ul style={{ marginTop: "20px" }}>
+            {
+              items
+            }
+          </ul>
+          <div className=' flex flex-col mt-5 ml-4'>
+            <button
+              onClick={() => setWidth("500px")}
+              className=' mb-[10px] rounded-md p-[10px] bg-slate-400'>550px</button>
+            <button
+              onClick={() => setWidth("600px")}
+              className=' mb-[10px] rounded-md p-[10px] bg-slate-400'>600px</button>
+            <button
+              onClick={() => setWidth("100%")}
+              className=' mb-[10px] rounded-md p-[10px] bg-slate-400'>900px</button>
+          </div>
+
+        </div>
+
+
       </main>
     </>
   )

@@ -6,7 +6,7 @@ export interface SelectedTrackInfo {
     title: string;
 }
 
-interface VideoPlayState {
+export interface VideoPlayState {
     playing: boolean;
     loaded: boolean;
     isSupported: boolean;
@@ -24,6 +24,7 @@ interface VideoPlayState {
     autoResolution: string;
     initialized: boolean;
     settingIsOpen: boolean;
+    isMobileMode: boolean;
 }
 
 const initialState: VideoPlayState = {
@@ -43,7 +44,8 @@ const initialState: VideoPlayState = {
     isBuffering: false,
     autoResolution: "",
     initialized: false,
-    settingIsOpen: false
+    settingIsOpen: false,
+    isMobileMode: false
 }
 
 export const videoPlayerSlice = createSlice({
@@ -108,6 +110,9 @@ export const videoPlayerSlice = createSlice({
         },
         setInitialized: (state, action: PayloadAction<boolean>) => {
             state.initialized = action.payload;
+        },
+        setIsMobileMode: (state, action: PayloadAction<boolean>) =>{
+            state.isMobileMode = action.payload;
         }
     }
 });
@@ -129,6 +134,7 @@ export const selectIsBuffering = (state: RootState) => state.videoPlayer.isBuffe
 export const selectAutoResolution = (state: RootState) => state.videoPlayer.autoResolution;  
 export const selectInitialized = (state: RootState) => state.videoPlayer.initialized; 
 export const selectSettingIsOpen = (state: RootState) => state.videoPlayer.settingIsOpen; 
+export const selectIsMobileMode = (state: RootState) => state.videoPlayer.isMobileMode; 
 
 export const {
     setPlaying,
@@ -148,7 +154,8 @@ export const {
     setAutoResolution,
     setInitialized,
     setVideoDuration,
-    setSettingIsOpen
+    setSettingIsOpen,
+    setIsMobileMode
 } = videoPlayerSlice.actions
 
 

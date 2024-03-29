@@ -1,6 +1,6 @@
 // Mui removed
 import { useRef, useEffect } from "react";
-import { selectBuffer, selectProgressValue, setBuffer, setProgressValue } from "../../features/videoPlayer/videoPlayerSlice";
+import { selectBuffer, selectIsMobileMode, selectProgressValue, setBuffer, setProgressValue } from "../../features/videoPlayer/videoPlayerSlice";
 import eventEmitter from "./utils/eventEmitter";
 import { VideoEvent } from "./hooks/useVideoEventEmitter";
 import { useAppDispatch, useAppSelector } from "../../lib-hooks/hooks";
@@ -20,6 +20,8 @@ const MovieProgressbar = ({ player, videoElement, src }: MovieProgressbarProps) 
     const dispatch = useAppDispatch();
 
     const duration = useRef<number>(0);
+    
+    const isMobileMode = useAppSelector(selectIsMobileMode);
 
     useEffect(() => {
 
@@ -80,7 +82,7 @@ const MovieProgressbar = ({ player, videoElement, src }: MovieProgressbarProps) 
 
     return (
         <div
-        className=" py-0 px-5 sm:py-3 sm:px-5 md:p-5"
+        className={` ${isMobileMode ? 'py-0' : 'py-0 sm:py-3 md:p-5'} px-5 sm:px-5`}
             style={{ height: "4px" }}>
             <div style={{ position: "relative", height: "4px" }}>
                 {/* Buffer line */}
