@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import useShakaVideoPlayer from './hooks/useShakaVideoPlayer';
 import MovieProgressbar from './MovieProgressbar';
 import MoviePlayerBar from './MoviePlayerBar';
-import { selectFullScreen, selectLoaded, selectMute, selectPlaying, selectSelectedTrack, selectShowQualityMenu, selectVolume, setAutoResolution, setLoaded, setPlaying, setSelectedTrack, setShowQualityMenu, unloadAll } from '../../features/videoPlayer/videoPlayerSlice';
+import { selectFullScreen, selectIsMobileMode, selectIsVolumeSliderActive, selectLoaded, selectMute, selectPlaying, selectSelectedTrack, selectShowQualityMenu, selectVolume, setAutoResolution, setIsVolumeSliderActive, setLoaded, setPlaying, setSelectedTrack, setShowQualityMenu, setVolume, unloadAll } from '../../features/videoPlayer/videoPlayerSlice';
 import useShakaABR from './hooks/useShakaABR';
 import eventEmitter from './utils/eventEmitter';
 import useVideoEventEmitter, { VideoEvent } from './hooks/useVideoEventEmitter';
@@ -11,6 +11,7 @@ import VideoPlayerFrame from './VideoPlayerFrame';
 import { useAppDispatch, useAppSelector } from '../../lib-hooks/hooks';
 import SettingMenu from './settingMenu/SettingMenu';
 import QualitySwitcher from './QualitySwitcher';
+import VerticalSlider from '../verticalSlider';
 
 interface ActualDashPlayerProps {
     mpdSrc: string;
@@ -32,6 +33,8 @@ const ActualDashPlayer = ({ mpdSrc }: ActualDashPlayerProps) => {
     const showQualityMenu = useAppSelector(selectShowQualityMenu);
 
     const fullScreen = useAppSelector(selectFullScreen);
+
+    const isVolumeSliderActive = useAppSelector(selectIsVolumeSliderActive);
 
     const { player, videoElement } = useShakaVideoPlayer();
 
@@ -57,7 +60,7 @@ const ActualDashPlayer = ({ mpdSrc }: ActualDashPlayerProps) => {
         const loadDashVideo = async () => {
             try {
 
-                if (initialized.current && previousSrc.current === mpdSrc){
+                if (initialized.current && previousSrc.current === mpdSrc) {
                     return;
                 }
                 initialized.current = true;
@@ -164,7 +167,7 @@ const ActualDashPlayer = ({ mpdSrc }: ActualDashPlayerProps) => {
             }
         }
 
-        function setMenuIsActive(isMenuActive: boolean){
+        function setMenuIsActive(isMenuActive: boolean) {
             isMenuOpenFullscreen.current = isMenuActive;
         }
 
@@ -180,7 +183,15 @@ const ActualDashPlayer = ({ mpdSrc }: ActualDashPlayerProps) => {
 
     useEffect(() => {
         setIsHidePlayerMenu(fullScreen);
-    }, [fullScreen])
+    }, [fullScreen]);
+
+    const hideVolumeSlider = () => {
+        dispatch(setIsVolumeSliderActive(false));
+    }
+
+    const handleVolumeChange = (value: number) => {
+        dispatch(setVolume(value));
+    }
 
     return (
         <VideoPlayerFrame mpdSrc={mpdSrc} videoElement={videoElement}>
@@ -212,8 +223,15 @@ const ActualDashPlayer = ({ mpdSrc }: ActualDashPlayerProps) => {
             {
                 showQualityMenu && <QualitySwitcher player={player} src={mpdSrc}></QualitySwitcher>
             }
+
+            {/* test vertival range slider */}
+            {
+                isVolumeSliderActive && <VerticalSlider onClickOutside={hideVolumeSlider} value={volume} onChange={handleVolumeChange} />
+            }
+            
         </VideoPlayerFrame>
     )
 }
 
 export default ActualDashPlayer;
+

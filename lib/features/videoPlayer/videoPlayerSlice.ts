@@ -25,6 +25,7 @@ export interface VideoPlayState {
     initialized: boolean;
     settingIsOpen: boolean;
     isMobileMode: boolean;
+    isVolumeSliderActive: boolean;
 }
 
 const initialState: VideoPlayState = {
@@ -45,7 +46,8 @@ const initialState: VideoPlayState = {
     autoResolution: "",
     initialized: false,
     settingIsOpen: false,
-    isMobileMode: false
+    isMobileMode: false,
+    isVolumeSliderActive: false
 }
 
 export const videoPlayerSlice = createSlice({
@@ -113,6 +115,9 @@ export const videoPlayerSlice = createSlice({
         },
         setIsMobileMode: (state, action: PayloadAction<boolean>) =>{
             state.isMobileMode = action.payload;
+        },
+        setIsVolumeSliderActive: (state, action: PayloadAction<boolean>) =>{
+            state.isVolumeSliderActive = action.payload;
         }
     }
 });
@@ -135,6 +140,7 @@ export const selectAutoResolution = (state: RootState) => state.videoPlayer.auto
 export const selectInitialized = (state: RootState) => state.videoPlayer.initialized; 
 export const selectSettingIsOpen = (state: RootState) => state.videoPlayer.settingIsOpen; 
 export const selectIsMobileMode = (state: RootState) => state.videoPlayer.isMobileMode; 
+export const selectIsVolumeSliderActive = (state: RootState) => state.videoPlayer.isVolumeSliderActive;
 
 export const {
     setPlaying,
@@ -155,7 +161,8 @@ export const {
     setInitialized,
     setVideoDuration,
     setSettingIsOpen,
-    setIsMobileMode
+    setIsMobileMode,
+    setIsVolumeSliderActive
 } = videoPlayerSlice.actions
 
 

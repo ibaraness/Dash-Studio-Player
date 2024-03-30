@@ -22,7 +22,7 @@ const videoList = [
 function App() {
 
   const [selected, setSelected] = useState(videoList[0]);
-  const [width, setWidth] = useState("300px");
+  const [width, setWidth] = useState("500px");
 
   const items = videoList.map(video => {
     return (
@@ -55,8 +55,8 @@ function App() {
           </ul>
           <div className=' flex flex-col mt-5 ml-4'>
             <button
-              onClick={() => setWidth("500px")}
-              className=' mb-[10px] rounded-md p-[10px] bg-slate-400'>550px</button>
+              onClick={() => setWidth("400px")}
+              className=' mb-[10px] rounded-md p-[10px] bg-slate-400'>400px</button>
             <button
               onClick={() => setWidth("600px")}
               className=' mb-[10px] rounded-md p-[10px] bg-slate-400'>600px</button>
@@ -67,6 +67,11 @@ function App() {
 
         </div>
 
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc felis nulla, vestibulum sed pretium vel, condimentum ac turpis. Fusce pharetra accumsan consequat. Morbi eleifend scelerisque turpis, at viverra justo vehicula id. Etiam id feugiat nulla. Aliquam posuere non eros et suscipit. Donec ut lacus in arcu imperdiet efficitur vitae ac urna. Curabitur dapibus elementum leo ut euismod. Nunc et mauris hendrerit, fermentum mi a, consequat diam. Aliquam erat volutpat. Nullam tristique magna a est placerat pretium. Ut quis pulvinar dolor, et imperdiet neque. Pellentesque rutrum pellentesque tellus non rutrum. Ut non nibh nec tellus dapibus lacinia ac a nibh. Nam odio nulla, gravida eget gravida sed, varius in sapien. Duis nunc nisl, eleifend id dui a, consectetur dignissim enim. In mollis efficitur lorem at hendrerit.
+
+          Duis pulvinar velit sit amet turpis vulputate pretium. Maecenas ut sem massa. Vestibulum non justo mauris. Praesent sit amet fermentum lorem. Proin pretium aliquam rutrum. Curabitur a venenatis ipsum. Mauris at purus urna. Maecenas in cursus justo.
+        </p>
 
       </main>
     </>

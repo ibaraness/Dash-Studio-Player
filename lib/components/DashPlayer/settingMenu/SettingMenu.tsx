@@ -1,7 +1,7 @@
 // Mui removed
 import ChevronDoubleLeftIcon from '@heroicons/react/24/solid/ChevronDoubleLeftIcon';
 
-import { selectSettingIsOpen, selectVariantTracks, setSettingIsOpen, setVariantTracks } from "../../../features/videoPlayer/videoPlayerSlice";
+import { selectIsMobileMode, selectSettingIsOpen, selectVariantTracks, setSettingIsOpen, setVariantTracks } from "../../../features/videoPlayer/videoPlayerSlice";
 import { useAppDispatch, useAppSelector } from "../../../lib-hooks/hooks";
 import { useEffect, useState } from "react";
 import DashPlayerQualityMenu from "../DashPlayerQualityMenu";
@@ -24,6 +24,8 @@ const SettingMenu = ({ player }: SettingMenuProps) => {
     const settingIsOpen = useAppSelector(selectSettingIsOpen);
 
     const variantTracks = useAppSelector(selectVariantTracks);
+
+    const isMobileMode = useAppSelector(selectIsMobileMode);
 
     const dispatch = useAppDispatch();
 
@@ -58,7 +60,7 @@ const SettingMenu = ({ player }: SettingMenuProps) => {
     return (
         <div
             onClick={() => { handleClose(false) }}
-            className={`${settingIsOpen ? ' block' : ' hidden'} fixed sm:absolute top-0 left-0 z-50 right-0 bottom-0 sm:bottom-[70px] text-slate-700  bg-black/30 sm:bg-transparent`}>
+            className={`${settingIsOpen ? ' block' : ' hidden'} ${isMobileMode ? 'sm:bottom-[50px]': 'sm:bottom-[70px]'} fixed sm:absolute top-0 left-0 z-50 right-0 bottom-0  text-slate-700  bg-black/30 sm:bg-transparent`}>
             <div className=" absolute bottom-0 left-0 w-full sm:right-0 sm:left-auto sm:w-auto p-2">
                 {
                     activeMenu === ActiveMenu.Main &&

@@ -10,7 +10,7 @@ import ArrowsPointingInIcon from '@heroicons/react/24/solid/ArrowsPointingInIcon
 import ArrowsPointingOutIcon from '@heroicons/react/24/solid/ArrowsPointingOutIcon';
 import Cog6ToothIcon from '@heroicons/react/24/solid/Cog6ToothIcon';
 
-import { selectAutoResolution, selectFullScreen, selectIsMobileMode, selectMute, selectPlaying, selectSelectedTrack, selectSettingIsOpen, selectShowQualityMenu, selectVolume, setFullScreen, setMute, setPlaying, setSettingIsOpen, setShowQualityMenu, setVolume } from "../../features/videoPlayer/videoPlayerSlice";
+import { selectAutoResolution, selectFullScreen, selectIsMobileMode, selectIsVolumeSliderActive, selectMute, selectPlaying, selectSelectedTrack, selectSettingIsOpen, selectShowQualityMenu, selectVolume, setFullScreen, setIsVolumeSliderActive, setMute, setPlaying, setSettingIsOpen, setShowQualityMenu, setVolume } from "../../features/videoPlayer/videoPlayerSlice";
 import { useEffect } from "react";
 import eventEmitter from "./utils/eventEmitter";
 import { VideoEvent } from "./hooks/useVideoEventEmitter";
@@ -27,13 +27,13 @@ const MoviePlayerBar = ({ videoElement, src }: MoviePlayerBarProps) => {
 
     const playing = useAppSelector(selectPlaying);
     const fullScreen = useAppSelector(selectFullScreen);
-    const volume = useAppSelector(selectVolume);
     const mute = useAppSelector(selectMute);
     const selectedTrack = useAppSelector(selectSelectedTrack);
     const showQualityMenu = useAppSelector(selectShowQualityMenu);
     const autoResolution = useAppSelector(selectAutoResolution);
     const settingIsOpen = useAppSelector(selectSettingIsOpen);
     const isMobileMode = useAppSelector(selectIsMobileMode);
+    const isVolumeSliderActive = useAppSelector(selectIsVolumeSliderActive);
 
     useEffect(() => {
         function setPlayingState() {
@@ -55,12 +55,16 @@ const MoviePlayerBar = ({ videoElement, src }: MoviePlayerBarProps) => {
         dispatch(setFullScreen(!fullScreen));
     }
 
-    const handleVolumeChange = (value: number) => {
-        dispatch(setVolume(value));
-    }
-
     const toggleMute = () => {
-        dispatch(setMute(!mute));
+        // Check if volum vertical slider is active,
+        // open it, if it is already open, then toggle mute
+        if(isVolumeSliderActive){
+            dispatch(setMute(true));
+            dispatch(setIsVolumeSliderActive(!isVolumeSliderActive));
+        }else {
+            dispatch(setIsVolumeSliderActive(true));
+            dispatch(setMute(false));
+        }
     }
 
     const toggleQualityMenu = () => {
@@ -98,13 +102,6 @@ const MoviePlayerBar = ({ videoElement, src }: MoviePlayerBarProps) => {
                         }
 
                     </ClickableIcon>
-                    {
-                        !isMobileMode && !mute &&
-                        <input
-                            className=" hidden sm:block w-full max-w-20 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer range-sm dark:bg-gray-700"
-                            type="range" aria-label="Volume" min="0" max="100" value={volume} onChange={(event) => handleVolumeChange(+event.target.value)} step="1" />
-    
-                    }
                     <VideoTimer video={videoElement} src={src}></VideoTimer>
                 </div>
                 <div className=" flex flex-row-reverse items-center w-full">
