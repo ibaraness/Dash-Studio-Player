@@ -10,7 +10,7 @@ import ArrowsPointingInIcon from '@heroicons/react/24/solid/ArrowsPointingInIcon
 import ArrowsPointingOutIcon from '@heroicons/react/24/solid/ArrowsPointingOutIcon';
 import Cog6ToothIcon from '@heroicons/react/24/solid/Cog6ToothIcon';
 
-import { selectAutoResolution, selectFullScreen, selectIsMobileMode, selectIsVolumeSliderActive, selectMute, selectPlaying, selectSelectedTrack, selectSettingIsOpen, selectShowQualityMenu, selectVolume, setFullScreen, setIsVolumeSliderActive, setMute, setPlaying, setSettingIsOpen, setShowQualityMenu, setVolume } from "../../features/videoPlayer/videoPlayerSlice";
+import { selectAutoResolution, selectFullScreen, selectIsMobileMode, selectIsVolumeSliderActive, selectMute, selectPlaying, selectSelectedTrack, selectSettingIsOpen, selectShowQualityMenu, setFullScreen, setIsVolumeSliderActive, setMute, setPlaying, setSettingIsOpen, setShowQualityMenu } from "../../features/videoPlayer/videoPlayerSlice";
 import { useEffect } from "react";
 import eventEmitter from "./utils/eventEmitter";
 import { VideoEvent } from "./hooks/useVideoEventEmitter";

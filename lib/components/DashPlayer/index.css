@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Styling with no UI. */
+/* ::cue {
+    background-color: aqua;
+} */
+/* .shaka-text-container span {
+    background-color: transparent !important;
+} */
+
+/* Styling with UI. */
+/* .shaka-text-container {
+    color: white;
+    font-size: 24pt;
+    background-color: transparent;
+} */
+
+/* Styling with UI, only when fullscreen (may not be supported in some browsers). */
+/* .shaka-text-container:fullscreen {
+    font-size: 24pt;
+} */

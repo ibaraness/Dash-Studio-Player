@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import useShakaVideoPlayer from './hooks/useShakaVideoPlayer';
 import MovieProgressbar from './MovieProgressbar';
 import MoviePlayerBar from './MoviePlayerBar';
-import { selectFullScreen, selectIsMobileMode, selectIsVolumeSliderActive, selectLoaded, selectMute, selectPlaying, selectSelectedTrack, selectShowQualityMenu, selectVolume, setAutoResolution, setIsVolumeSliderActive, setLoaded, setPlaying, setSelectedTrack, setShowQualityMenu, setVolume, unloadAll } from '../../features/videoPlayer/videoPlayerSlice';
+import { selectCaptionsLanguage, selectFullScreen, selectIsDisplayCaptions, selectIsMobileMode, selectIsVolumeSliderActive, selectLoaded, selectMute, selectPlaying, selectSelectedTrack, selectShowQualityMenu, selectVolume, setAutoResolution, setCaptionsLanguage, setIsDisplayCaptions, setIsVolumeSliderActive, setLoaded, setPlaying, setSelectedTrack, setShowQualityMenu, setVolume, unloadAll } from '../../features/videoPlayer/videoPlayerSlice';
 import useShakaABR from './hooks/useShakaABR';
 import eventEmitter from './utils/eventEmitter';
 import useVideoEventEmitter, { VideoEvent } from './hooks/useVideoEventEmitter';
@@ -12,11 +12,21 @@ import { useAppDispatch, useAppSelector } from '../../lib-hooks/hooks';
 import SettingMenu from './settingMenu/SettingMenu';
 import QualitySwitcher from './QualitySwitcher';
 import VerticalSlider from '../verticalSlider';
+import { shaka } from './shaka/shaka';
+import { DashPlayerCaption } from '.';
 
 interface ActualDashPlayerProps {
     mpdSrc: string;
+
+    captions?: DashPlayerCaption[];
+
+    // Should the captions be displayed by default. If language is not found, then the first track will be displayed
+    displayCaptions?: boolean;
+
+    // Default subtitles language. defalt is english ('en')
+    captionLanguage?: string;
 }
-const ActualDashPlayer = ({ mpdSrc }: ActualDashPlayerProps) => {
+const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }: ActualDashPlayerProps) => {
 
     const loaded = useAppSelector(selectLoaded);
 
@@ -36,6 +46,12 @@ const ActualDashPlayer = ({ mpdSrc }: ActualDashPlayerProps) => {
 
     const isVolumeSliderActive = useAppSelector(selectIsVolumeSliderActive);
 
+    const isMobileMode = useAppSelector(selectIsMobileMode);
+
+    const captionsLanguage = useAppSelector(selectCaptionsLanguage);
+
+    const isDisplayCaptions = useAppSelector(selectIsDisplayCaptions);
+
     const { player, videoElement } = useShakaVideoPlayer();
 
     const [isHidePlayerMenu, setIsHidePlayerMenu] = useState(false);
@@ -54,6 +70,66 @@ const ActualDashPlayer = ({ mpdSrc }: ActualDashPlayerProps) => {
 
     const initialized = useRef(false);
     const previousSrc = useRef(mpdSrc);
+
+    const subTitleInitialized = useRef(false);
+    // const previousSubtitle = useRef(srtURL);
+
+    const cueContainer = useRef<HTMLDivElement>(null);
+
+    // *************** [ SRT Caption addition] ****************
+
+    const toggleCaptions = () => {
+        if (loaded) {
+            if (!isDisplayCaptions) {
+                player.setTextTrackVisibility(false);
+            } else {
+                const textTracks: any[] = player.getTextTracks();
+                
+                if (textTracks.length) {
+                    const selected = textTracks.find(track => track.language = captionLanguage || 'en');
+                    player.selectTextTrack(selected || textTracks[0]);
+                    player.setTextTrackVisibility(true);
+                }
+
+            }
+        }
+    }
+
+    useEffect(() => {
+        dispatch(setIsDisplayCaptions(displayCaptions || false));
+        dispatch(setCaptionsLanguage(captionLanguage || 'en'))
+    }, [displayCaptions, captionLanguage, dispatch]);
+
+    useEffect(() => {
+        toggleCaptions();
+    }, [isDisplayCaptions, captionsLanguage, loaded, subTitleInitialized.current, toggleCaptions]);
+
+    
+
+    useEffect(() => {
+        async function loadSubtitle() {
+            if (!captions) {
+                subTitleInitialized.current = false;
+                return;
+            }
+            for (let i = 0; i < captions.length; i++) {
+                const { src, language, kind } = captions[0];
+                await player.addTextTrackAsync(src, language, kind);
+                subTitleInitialized.current = true;
+                toggleCaptions();
+            }
+        }
+
+        if (captions && loaded) {
+            loadSubtitle();
+        }
+
+        if (cueContainer.current) {
+            player.configure('textDisplayFactory', () => new shaka.text.UITextDisplayer(videoElement, cueContainer.current));
+        }
+    }, [captions, loaded])
+
+    // *************** [ SRT Caption addition] ****************
 
     // Load dash mpd file to shaka-player and set video to autoplay
     useEffect(() => {
@@ -174,6 +250,7 @@ const ActualDashPlayer = ({ mpdSrc }: ActualDashPlayerProps) => {
         const fullScreenListener = eventEmitter.addListener('fullscreenchange', fullScreenHandler);
         const mouseListener = eventEmitter.addListener('mouseMoveFrame', showMenuAgain);
         const menuListener = eventEmitter.addListener('menuIsOpen', setMenuIsActive);
+
         return () => {
             fullScreenListener.remove();
             mouseListener.remove();
@@ -195,6 +272,9 @@ const ActualDashPlayer = ({ mpdSrc }: ActualDashPlayerProps) => {
 
     return (
         <VideoPlayerFrame mpdSrc={mpdSrc} videoElement={videoElement}>
+            <div ref={cueContainer}
+                style={{ fontSize: fullScreen ? "24px" : "16px" }}
+                className={` ${isMobileMode ? 'sm:bottom-12' : 'sm:bottom-20'} absolute bottom-12 left-0 right-0 text-white z-50`}></div>
             {
                 loaded &&
                 <div style={{
@@ -217,6 +297,8 @@ const ActualDashPlayer = ({ mpdSrc }: ActualDashPlayerProps) => {
                         </>
                     </div>
 
+
+
                 </div>
             }
             <SettingMenu player={player} src={mpdSrc} />
@@ -228,7 +310,7 @@ const ActualDashPlayer = ({ mpdSrc }: ActualDashPlayerProps) => {
             {
                 isVolumeSliderActive && <VerticalSlider onClickOutside={hideVolumeSlider} value={volume} onChange={handleVolumeChange} />
             }
-            
+
         </VideoPlayerFrame>
     )
 }
