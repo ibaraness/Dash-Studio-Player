@@ -28,6 +28,7 @@ export interface VideoPlayState {
     isVolumeSliderActive: boolean;
     isDisplayCaptions: boolean;
     captionsLanguage: string;
+    speed: number;
 }
 
 const initialState: VideoPlayState = {
@@ -51,7 +52,8 @@ const initialState: VideoPlayState = {
     isMobileMode: false,
     isVolumeSliderActive: false,
     isDisplayCaptions: false,
-    captionsLanguage: 'en'
+    captionsLanguage: 'en',
+    speed:1
 }
 
 export const videoPlayerSlice = createSlice({
@@ -129,6 +131,9 @@ export const videoPlayerSlice = createSlice({
         setCaptionsLanguage:(state, action: PayloadAction<string>) => {
             state.captionsLanguage = action.payload;
         },
+        setVideoSpeed:(state, action: PayloadAction<number>) => {
+            state.speed = action.payload;
+        }
     }
 });
 
@@ -153,7 +158,7 @@ export const selectIsMobileMode = (state: RootState) => state.videoPlayer.isMobi
 export const selectIsVolumeSliderActive = (state: RootState) => state.videoPlayer.isVolumeSliderActive;
 export const selectIsDisplayCaptions = (state: RootState) => state.videoPlayer.isDisplayCaptions; 
 export const selectCaptionsLanguage = (state: RootState) => state.videoPlayer.captionsLanguage; 
-
+export const selectVideoSpeed = (state: RootState) => state.videoPlayer.speed;
 
 export const {
     setPlaying,
@@ -177,7 +182,8 @@ export const {
     setIsMobileMode,
     setIsVolumeSliderActive,
     setIsDisplayCaptions,
-    setCaptionsLanguage
+    setCaptionsLanguage,
+    setVideoSpeed
 } = videoPlayerSlice.actions
 
 

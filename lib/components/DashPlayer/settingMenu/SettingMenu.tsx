@@ -1,12 +1,13 @@
 // Mui removed
 import ChevronDoubleLeftIcon from '@heroicons/react/24/solid/ChevronDoubleLeftIcon';
 
-import { selectCaptionsLanguage, selectIsDisplayCaptions, selectIsMobileMode, selectSettingIsOpen, selectVariantTracks, setSettingIsOpen, setVariantTracks } from "../../../features/videoPlayer/videoPlayerSlice";
+import { selectCaptionsLanguage, selectIsDisplayCaptions, selectIsMobileMode, selectSettingIsOpen, selectVariantTracks, selectVideoSpeed, setSettingIsOpen, setVariantTracks } from "../../../features/videoPlayer/videoPlayerSlice";
 import { useAppDispatch, useAppSelector } from "../../../lib-hooks/hooks";
 import { useEffect, useState } from "react";
 import DashPlayerQualityMenu from "../DashPlayerQualityMenu";
 import eventEmitter from '../utils/eventEmitter';
 import CaptionsMenu from './CaptionsMenu';
+import SpeedMenu from './SpeedMenu';
 
 export interface SettingMenuProps {
     player: any,
@@ -16,7 +17,8 @@ export interface SettingMenuProps {
 enum ActiveMenu {
     Main = 0,
     Quality = 1,
-    Captions = 2
+    Captions = 2,
+    Speed = 3
 }
 
 const SettingMenu = ({ player }: SettingMenuProps) => {
@@ -32,6 +34,8 @@ const SettingMenu = ({ player }: SettingMenuProps) => {
     const captionsLanguage = useAppSelector(selectCaptionsLanguage);
 
     const isDisplayCaptions = useAppSelector(selectIsDisplayCaptions);
+
+    const videoSpeed = useAppSelector(selectVideoSpeed);
 
     const dispatch = useAppDispatch();
 
@@ -63,6 +67,11 @@ const SettingMenu = ({ player }: SettingMenuProps) => {
         setActiveMenu(ActiveMenu.Captions);
     }
 
+    const handleSpeedChange = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        event.stopPropagation();
+        setActiveMenu(ActiveMenu.Speed);
+    }
+
     const goBackToMain = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         event.stopPropagation();
         setActiveMenu(ActiveMenu.Main);
@@ -75,7 +84,7 @@ const SettingMenu = ({ player }: SettingMenuProps) => {
             <div className=" absolute bottom-0 left-0 w-full sm:right-0 sm:left-auto sm:w-auto p-2">
                 {
                     activeMenu === ActiveMenu.Main &&
-                    <div className=" bg-white rounded-md w-full py-3 px-5">
+                    <div className=" bg-white rounded-md shadow-sm shadow-slate-700/40 w-full py-3 px-5">
                         <h3 className=" text-md">Settings</h3>
                         <div className=" mt-2 border-t-2 pt-2 flex justify-between items-center">
                             <h4 className=" text-sm mr-5">Quality</h4>
@@ -86,7 +95,14 @@ const SettingMenu = ({ player }: SettingMenuProps) => {
                         </div>
                         <div className=" mt-2 border-t-2 pt-2 flex justify-between items-center">
                             <h4 className=" text-sm mr-5">Speed</h4>
-                            <span className=" text-xs text-cyan-800">2X</span>
+                            <div
+                                onClick={handleSpeedChange}
+                                role="button"
+                                className=" text-xs text-cyan-800 underline">
+                                {
+                                    `${videoSpeed}X`
+                                }
+                            </div>
                         </div>
                         <div className=" mt-2 border-t-2 pt-2 flex justify-between items-center">
                             <h4 className=" text-sm mr-5">Subtitle</h4>
@@ -101,7 +117,7 @@ const SettingMenu = ({ player }: SettingMenuProps) => {
                 }
                 {
                     activeMenu === ActiveMenu.Quality &&
-                    <div className="bg-white rounded-md w-full sm:w-[200px] overflow-hidden">
+                    <div className="bg-white rounded-md w-full sm:w-[200px] shadow-sm shadow-slate-700/40  overflow-hidden">
                         <div
                             onClick={goBackToMain}
                             className=" py-3 px-4 bg-slate-300" role="button">
@@ -114,7 +130,7 @@ const SettingMenu = ({ player }: SettingMenuProps) => {
                 }
                 {
                     activeMenu === ActiveMenu.Captions &&
-                    <div className="bg-white rounded-md w-full sm:w-[200px] overflow-hidden">
+                    <div className="bg-white rounded-md w-full sm:w-[200px] shadow-sm shadow-slate-700/40  overflow-hidden">
                         <div
                             onClick={goBackToMain}
                             className=" py-3 px-4 bg-slate-300" role="button">
@@ -123,7 +139,17 @@ const SettingMenu = ({ player }: SettingMenuProps) => {
                         <CaptionsMenu player={player} />
                     </div>
                 }
-
+                {
+                    activeMenu === ActiveMenu.Speed &&
+                    <div className="bg-white rounded-md w-full shadow-sm shadow-slate-700/40  sm:w-[200px] overflow-hidden">
+                        <div
+                            onClick={goBackToMain}
+                            className=" py-3 px-4 bg-slate-300" role="button">
+                            <ChevronDoubleLeftIcon className=" w-4 h-4" />
+                        </div>
+                        <SpeedMenu player={player} />
+                    </div>
+                }
             </div>
         </div>
     )
