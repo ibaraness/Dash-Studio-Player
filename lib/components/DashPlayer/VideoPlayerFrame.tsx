@@ -133,7 +133,7 @@ const VideoPlayerFrame = ({ mpdSrc, videoElement, children }: VideoPlayerFramePr
     });
 
     return (
-        <div ref={playerContainerRef} className=" relative aspect-video" >
+        <div ref={playerContainerRef} className=" dsp-app relative aspect-video" >
                 <div style={{ position: 'relative' }} >
                     <div className=" bg-black w-full" ref={videoContainerRef}></div>
                     <div

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import useShakaVideoPlayer from './hooks/useShakaVideoPlayer';
 import MovieProgressbar from './MovieProgressbar';
 import MoviePlayerBar from './MoviePlayerBar';
-import { selectCaptionsLanguage, selectFullScreen, selectIsDisplayCaptions, selectIsMobileMode, selectIsVolumeSliderActive, selectLoaded, selectMute, selectPlaying, selectSelectedTrack, selectShowQualityMenu, selectVolume, setAutoResolution, setCaptionsLanguage, setIsDisplayCaptions, setIsVolumeSliderActive, setLoaded, setPlaying, setSelectedTrack, setShowQualityMenu, setVolume, unloadAll } from '../../features/videoPlayer/videoPlayerSlice';
+import { selectCaptionsLanguage, selectFullScreen, selectIsDisplayCaptions, selectIsMobileMode, selectIsVolumeSliderActive, selectLoaded, selectMute, selectPlaying, selectSelectedTrack, selectShowQualityMenu, selectVolume, selectVolumeLeftPosition, setAutoResolution, setCaptionsLanguage, setIsDisplayCaptions, setIsVolumeSliderActive, setLoaded, setPlaying, setSelectedTrack, setShowQualityMenu, setVolume, unloadAll } from '../../features/videoPlayer/videoPlayerSlice';
 import useShakaABR from './hooks/useShakaABR';
 import eventEmitter from './utils/eventEmitter';
 import useVideoEventEmitter, { VideoEvent } from './hooks/useVideoEventEmitter';
@@ -51,6 +51,8 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
     const captionsLanguage = useAppSelector(selectCaptionsLanguage);
 
     const isDisplayCaptions = useAppSelector(selectIsDisplayCaptions);
+
+    const volumeSliderLeft = useAppSelector(selectVolumeLeftPosition);
 
     const { player, videoElement } = useShakaVideoPlayer();
 
@@ -308,7 +310,7 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
 
             {/* test vertival range slider */}
             {
-                isVolumeSliderActive && <VerticalSlider onClickOutside={hideVolumeSlider} value={volume} onChange={handleVolumeChange} />
+                isVolumeSliderActive && <VerticalSlider onClickOutside={hideVolumeSlider} left={volumeSliderLeft} value={volume} onChange={handleVolumeChange} />
             }
 
         </VideoPlayerFrame>

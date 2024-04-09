@@ -27,7 +27,7 @@ const SpeedMenu = ({ player }: SpeedMenuProps) => {
             <li
                 key={text}
                 onClick={() => handleSelectSpeed(speed)}
-                className=" m-0 flex px-4 py-2 h-8 hover:bg-slate-100 border-b-2 text-xs" role="button">
+                className=" cursor-pointer m-0 flex px-4 py-2 h-8 hover:bg-slate-100 border-b-2 text-xs" role="button">
                 <div className=" w-5 mr-1">
                     {
                         speed === videoSpeed  && <CheckIcon className=" text-black w-4" />

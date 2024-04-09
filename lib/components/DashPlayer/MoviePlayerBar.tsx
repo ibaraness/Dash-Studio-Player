@@ -10,7 +10,7 @@ import ArrowsPointingInIcon from '@heroicons/react/24/solid/ArrowsPointingInIcon
 import ArrowsPointingOutIcon from '@heroicons/react/24/solid/ArrowsPointingOutIcon';
 import Cog6ToothIcon from '@heroicons/react/24/solid/Cog6ToothIcon';
 
-import { selectAutoResolution, selectFullScreen, selectIsMobileMode, selectIsVolumeSliderActive, selectMute, selectPlaying, selectSelectedTrack, selectSettingIsOpen, selectShowQualityMenu, setFullScreen, setIsVolumeSliderActive, setMute, setPlaying, setSettingIsOpen, setShowQualityMenu } from "../../features/videoPlayer/videoPlayerSlice";
+import { selectAutoResolution, selectFullScreen, selectIsMobileMode, selectIsVolumeSliderActive, selectMute, selectPlaying, selectSelectedTrack, selectSettingIsOpen, selectShowQualityMenu, setFullScreen, setIsVolumeSliderActive, setMute, setPlaying, setSettingIsOpen, setShowQualityMenu, setVolumeLeftPosition } from "../../features/videoPlayer/videoPlayerSlice";
 import { useEffect } from "react";
 import eventEmitter from "./utils/eventEmitter";
 import { VideoEvent } from "./hooks/useVideoEventEmitter";
@@ -55,7 +55,8 @@ const MoviePlayerBar = ({ videoElement, src }: MoviePlayerBarProps) => {
         dispatch(setFullScreen(!fullScreen));
     }
 
-    const toggleMute = () => {
+    const toggleMute = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+
         // Check if volum vertical slider is active,
         // open it, if it is already open, then toggle mute
         if(isVolumeSliderActive){
@@ -63,6 +64,7 @@ const MoviePlayerBar = ({ videoElement, src }: MoviePlayerBarProps) => {
             dispatch(setIsVolumeSliderActive(!isVolumeSliderActive));
         }else {
             dispatch(setIsVolumeSliderActive(true));
+            dispatch(setVolumeLeftPosition(event.currentTarget.offsetLeft))
             dispatch(setMute(false));
         }
     }
@@ -94,7 +96,7 @@ const MoviePlayerBar = ({ videoElement, src }: MoviePlayerBarProps) => {
                     </ClickableIcon>
                     <ClickableIcon
                         className=" hidden sm:flex"
-                        onClick={() => toggleMute()} aria-label="volume">
+                        onClick={(event) => toggleMute(event)} aria-label="volume">
                         {
                             mute
                                 ? <SpeakerXMarkIcon className=" text-white w-5 h-5" />
@@ -114,14 +116,14 @@ const MoviePlayerBar = ({ videoElement, src }: MoviePlayerBarProps) => {
 
 
                     </ClickableIcon>
-                    <ClickableIcon onClick={() => toggleSettings()} className=" relative" aria-label="settings">
+                    <ClickableIcon onClick={() => toggleSettings()} className=" relative mx-2 sm:mx-0" aria-label="settings">
                         <Cog6ToothIcon className=" text-white w-5 h-5" />
                     </ClickableIcon>
                     <div>
                         <div
                             role="button"
                             style={{display: isMobileMode ? "none" : "block" }}
-                            className=" hidden md:inline-block text-white uppercase text-sm font-semibold"
+                            className=" cursor-pointer hidden md:inline-block text-white uppercase text-sm font-semibold"
                             onClick={() => toggleQualityMenu()} >
                             {selectedTrack.title}
                             {

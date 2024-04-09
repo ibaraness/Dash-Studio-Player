@@ -6,8 +6,9 @@ interface VerticalSliderProps {
     value?: number;
     onChange?: (value: number) => void;
     onClickOutside?: () => void;
+    left?:number;
 }
-const VerticalSlider = ({ value = 100, onChange, onClickOutside }: VerticalSliderProps) => {
+const VerticalSlider = ({ value = 100, onChange, onClickOutside, left=10 }: VerticalSliderProps) => {
 
     const trackElement = useRef<HTMLDivElement | null>(null);
 
@@ -125,12 +126,12 @@ const VerticalSlider = ({ value = 100, onChange, onClickOutside }: VerticalSlide
             ref={containerElement}
             className={` ${isMobileMode ? 'bottom-[52px]' : 'bottom-[70px]'} absolute top-0 left-0 z-50 right-0  text-slate-700  bg-transparent `}>
             <div
-                style={{ height: `${height}px` }}
+                style={{ height: `${height}px`, left:`${left}px` }}
                 onClick={(event) => { event.stopPropagation(); }}
                 role='button'
                 onMouseUp={(event) => { trackClick(event.clientY) }}
                 onTouchEnd={(event) => { trackClick(event.changedTouches[0].clientY) }}
-                className=' absolute w-7 bottom-7 left-10 bg-slate-500/40 rounded-xl'>
+                className=' absolute w-7 bottom-7 bg-slate-500/40 rounded-xl'>
                 {/* Track */}
                 <div
                     style={{ width: `${width}px` }}
@@ -144,7 +145,7 @@ const VerticalSlider = ({ value = 100, onChange, onClickOutside }: VerticalSlide
                     style={{ top: `${handlePositon}px`, width: `${handleSize}px`, height: `${handleSize}px` }}
                     role='button'
                     tabIndex={0}
-                    className=' absolute -translate-x-1/2 left-2/4 hover:scale-110 transition-transform rounded-full bg-blue-400'></div>
+                    className=' cursor-pointer absolute -translate-x-1/2 left-2/4 hover:scale-110 transition-transform rounded-full bg-blue-400'></div>
             </div>
         </div>
     )

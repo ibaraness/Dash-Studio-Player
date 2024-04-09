@@ -33,18 +33,18 @@ const CaptionsMenu = ({ player }: CaptionsMenuProps) => {
     }
 
     const qualitiesList = captions?.map(track => {
-        const text = track.language || 'unknown';
+        const text:string = track.language || 'unknown';
         return (
             <li
                 key={track.id}
                 onClick={() => handleSelectCaption(track)}
-                className=" m-0 flex px-4 py-2 h-8 hover:bg-slate-100 border-b-2 text-xs" role="button">
+                className="cursor-pointer m-0 flex px-4 py-2 h-8 hover:bg-slate-100 border-b-2 text-xs" role="button">
                 <div className=" w-5 mr-1">
                     {
                         track.language === captionsLanguage && isDisplayCaptions && <CheckIcon className=" text-black w-4" />
                     }
                 </div>
-                <span>{text}</span>
+                <span className=" capitalize">{text}</span>
             </li>
         )
     })
@@ -57,7 +57,7 @@ const CaptionsMenu = ({ player }: CaptionsMenuProps) => {
                 }
                 <li
                     onClick={() => handleSelectCaption(null)}
-                    className=" m-0 flex px-4 py-2 h-10 text-xs hover:bg-slate-100 border-b-2" role="button">
+                    className="cursor-pointer m-0 flex px-4 py-2 h-10 text-xs hover:bg-slate-100 border-b-2" role="button">
                     <div className=" w-5 mr-1">
                         {
                             !isDisplayCaptions && <CheckIcon className=" text-black w-4" />

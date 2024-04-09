@@ -1,6 +1,7 @@
 import ActualDashPlayer from './ActualDashPlayer';
 import { Provider } from 'react-redux';
 import { store } from '../../store/store';
+import '../../modern-normalize.css'
 import './index.css';
 
 export interface DashPlayerProps {

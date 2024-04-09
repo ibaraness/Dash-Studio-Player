@@ -38,7 +38,7 @@ const videoList: DashVideoItem[] = [
 
 function App() {
 
-  const [selected, setSelected] = useState(videoList[3]);
+  const [selected, setSelected] = useState(videoList[0]);
   const [width, setWidth] = useState("500px");
 
   const items = videoList.map(video => {
