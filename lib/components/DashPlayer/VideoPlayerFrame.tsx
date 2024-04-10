@@ -95,24 +95,23 @@ const VideoPlayerFrame = ({ mpdSrc, videoElement, children }: VideoPlayerFramePr
 
     // Notify eventEmitter listeners for mouse move during full screen
     const fullscreenMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (fullScreen) {
-            throttle(() => {
-                if (mousePosition.current === null) {
-                    mousePosition.current = { x: event.clientX, y: event.clientY }
-                    return;
-                }
-                const distanceX = Math.max(mousePosition.current.x, event.clientX) - Math.min(mousePosition.current.x, event.clientX);
-                const distanceY = Math.max(mousePosition.current.y, event.clientY) - Math.min(mousePosition.current.y, event.clientY);
-                mousePosition.current = null;
-                if (Math.max(distanceX, distanceY) > 30) {
-                    eventEmitter.emit("mouseMoveFrame", distanceX);
-                }
-            }, 50)
-        }
+        throttle(() => {
+            if (mousePosition.current === null) {
+                mousePosition.current = { x: event.clientX, y: event.clientY }
+                return;
+            }
+            const distanceX = Math.max(mousePosition.current.x, event.clientX) - Math.min(mousePosition.current.x, event.clientX);
+            const distanceY = Math.max(mousePosition.current.y, event.clientY) - Math.min(mousePosition.current.y, event.clientY);
+            mousePosition.current = null;
+            if (Math.max(distanceX, distanceY) > 30) {
+                eventEmitter.emit("mouseMoveFrame", distanceX);
+            }
+        }, 50)
     }
 
     useEffect(() =>{
-        if(!playerContainerRef.current){
+        const container = playerContainerRef.current;
+        if(!container){
             return;
         }
         const resizeObserver = new ResizeObserver((entries) => {
@@ -123,10 +122,10 @@ const VideoPlayerFrame = ({ mpdSrc, videoElement, children }: VideoPlayerFramePr
                 }
             }
         });
-        resizeObserver.observe(playerContainerRef.current);
+        resizeObserver.observe(container);
         return () => {
-            if(playerContainerRef.current){
-                resizeObserver.unobserve(playerContainerRef.current);
+            if(container){
+                resizeObserver.unobserve(container);
             }
             
         }

@@ -50,16 +50,17 @@ const VerticalSlider = ({ value = 100, onChange, onClickOutside, left=10 }: Vert
     }
 
     useEffect(() => {
+        const container = containerElement.current;
         function handleTouchMove(event: TouchEvent) {
             event.preventDefault();
             mouseMoveAll(event.touches[0].clientY);
         }
-        if (containerElement.current) {
-            containerElement.current.addEventListener('touchmove', handleTouchMove, { passive: false })
+        if (container) {
+            container.addEventListener('touchmove', handleTouchMove, { passive: false })
         }
         return () => {
-            if (containerElement.current) {
-                containerElement.current.removeEventListener('touchmove', handleTouchMove);
+            if (container) {
+                container.removeEventListener('touchmove', handleTouchMove);
             }
         }
     })

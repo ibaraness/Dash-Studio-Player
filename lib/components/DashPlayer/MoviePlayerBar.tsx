@@ -49,6 +49,7 @@ const MoviePlayerBar = ({ videoElement, src }: MoviePlayerBarProps) => {
 
     const togglePlayVideo = () => {
         dispatch(setPlaying(!playing));
+        eventEmitter.emit('playing', !playing);
     }
 
     const toggleFullScreen = () => {

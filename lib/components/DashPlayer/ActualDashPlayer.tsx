@@ -61,11 +61,13 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
     // Get or set fullscreen state before re-render
     const localFullScreenState = useRef(false);
 
+    const localPlayingState = useRef(false);
+
     // A flag to set the hideMenuDelay function as active to avoid calling it more than once when active
     const isMenuHideDelayActive = useRef(false);
 
-    // Check whether menu is active durring fullscreen to avoid hiding it while active 
-    const isMenuOpenFullscreen = useRef(false);
+    // Check whether menu is active durring play to avoid hiding it while playing 
+    const isMenuOpen = useRef(false);
 
     // Start listening for video events
     useVideoEventEmitter(videoElement);
@@ -80,7 +82,7 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
 
     // *************** [ SRT Caption addition] ****************
 
-    const toggleCaptions = () => {
+    const toggleCaptions = useCallback(() => {
         if (loaded) {
             if (!isDisplayCaptions) {
                 player.setTextTrackVisibility(false);
@@ -95,7 +97,7 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
 
             }
         }
-    }
+    },[captionLanguage, isDisplayCaptions, loaded, player])
 
     useEffect(() => {
         dispatch(setIsDisplayCaptions(displayCaptions || false));
@@ -104,7 +106,7 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
 
     useEffect(() => {
         toggleCaptions();
-    }, [isDisplayCaptions, captionsLanguage, loaded, subTitleInitialized.current, toggleCaptions]);
+    }, [isDisplayCaptions, captionsLanguage, loaded, toggleCaptions]);
 
     
 
@@ -129,7 +131,7 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
         if (cueContainer.current) {
             player.configure('textDisplayFactory', () => new shaka.text.UITextDisplayer(videoElement, cueContainer.current));
         }
-    }, [captions, loaded])
+    }, [captions, loaded, toggleCaptions, player, videoElement])
 
     // *************** [ SRT Caption addition] ****************
 
@@ -151,6 +153,7 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
                 dispatch(setLoaded(true));
                 // If autoplay
                 dispatch(setPlaying(true));
+                localPlayingState.current = true;
             } catch (err) {
                 console.error("playDashVideo", err)
             }
@@ -196,14 +199,32 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mpdSrc, player, selectedTrack]);
 
+    const hideMenuDelay = useCallback((delay = 1000) => {
+        setTimeout(() => {
+            isMenuHideDelayActive.current = false;
+            if(!isMenuOpen.current && localPlayingState.current){
+               setIsHidePlayerMenu(true); 
+            }
+            
+            if (localFullScreenState.current && !isMenuOpen.current && playing) {
+                document.body.style.cursor = 'none';
+            }
+        }, delay)
+    }, [playing]);
+
     // Toggle video player play by state
     useEffect(() => {
         if (playing && mpdSrc) {
+            localPlayingState.current = true;
             videoElement?.play();
+            hideMenuDelay(5000)
         } else {
             videoElement?.pause();
+            localPlayingState.current = false;
+            setIsHidePlayerMenu(false);
+            //show bar
         }
-    }, [playing, videoElement, mpdSrc]);
+    }, [playing, videoElement, mpdSrc, hideMenuDelay]);
 
     useEffect(() => {
         videoElement.muted = mute;
@@ -213,17 +234,6 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
         videoElement.volume = volume / 100;
     }, [volume, videoElement]);
 
-
-
-    const hideMenuDelay = useCallback((delay = 1000) => {
-        setTimeout(() => {
-            isMenuHideDelayActive.current = false;
-            if (localFullScreenState.current && !isMenuOpenFullscreen.current) {
-                setIsHidePlayerMenu(true);
-                document.body.style.cursor = 'none';
-            }
-        }, delay)
-    }, []);
 
     useEffect(() => {
         function fullScreenHandler(isFullscreen: boolean) {
@@ -237,7 +247,7 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
         }
 
         function showMenuAgain() {
-            if (fullScreen && !isMenuHideDelayActive.current) {
+            if (!isMenuHideDelayActive.current) {
                 setIsHidePlayerMenu(false);
                 isMenuHideDelayActive.current = true;
                 document.body.style.cursor = 'default';
@@ -246,17 +256,23 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
         }
 
         function setMenuIsActive(isMenuActive: boolean) {
-            isMenuOpenFullscreen.current = isMenuActive;
+            isMenuOpen.current = isMenuActive;
+        }
+
+        function handleLocalPlaying(isPlaying:boolean) {
+            localPlayingState.current = isPlaying;
         }
 
         const fullScreenListener = eventEmitter.addListener('fullscreenchange', fullScreenHandler);
         const mouseListener = eventEmitter.addListener('mouseMoveFrame', showMenuAgain);
         const menuListener = eventEmitter.addListener('menuIsOpen', setMenuIsActive);
+        const playingListener = eventEmitter.addListener('playing', handleLocalPlaying);
 
         return () => {
             fullScreenListener.remove();
             mouseListener.remove();
             menuListener.remove();
+            playingListener.remove();
         }
     }, [fullScreen, hideMenuDelay]);
 
@@ -276,7 +292,7 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
         <VideoPlayerFrame mpdSrc={mpdSrc} videoElement={videoElement}>
             <div ref={cueContainer}
                 style={{ fontSize: fullScreen ? "24px" : "16px" }}
-                className={` ${isMobileMode ? 'sm:bottom-12' : 'sm:bottom-20'} absolute bottom-12 left-0 right-0 text-white z-50`}></div>
+                className={` ${isMobileMode && !isHidePlayerMenu ? 'sm:bottom-12' : isHidePlayerMenu && !fullScreen ? 'sm:bottom-6': 'sm:bottom-20'} absolute bottom-12 left-0 right-0 text-white z-50`}></div>
             {
                 loaded &&
                 <div style={{
@@ -286,11 +302,12 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
                     zIndex: "99",
                     left: "0px",
                     bottom: "0px",
+                    opacity: isHidePlayerMenu ? 0 : 1, transition: "opacity .5s",
                     background: "linear-gradient(rgba(0,0,0,0), #000000)"
                 }}
                     className=' pb-0 sm:pb-3'
                 >
-                    <div style={{ opacity: isHidePlayerMenu ? 0 : 1, transition: "opacity .5s" }}>
+                    <div>
                         <>
                             <div className=' px-0'>
                                 <MovieProgressbar src={mpdSrc} player={player} videoElement={videoElement}></MovieProgressbar>
