@@ -22,11 +22,11 @@ const CaptionsMenu = ({ player }: CaptionsMenuProps) => {
 
     const handleSelectCaption = (track: any) => {
         if (!track) {
-            dispatch(setCaptionsLanguage('en'));
+            dispatch(setCaptionsLanguage(''));
             dispatch(setIsDisplayCaptions(false));
             return;
         }
-        dispatch(setCaptionsLanguage(track.language || 'en'));
+        dispatch(setCaptionsLanguage(track.language || ''));
         dispatch(setIsDisplayCaptions(true));
         player.selectTextTrack(track);
         player.setTextTrackVisibility(true);

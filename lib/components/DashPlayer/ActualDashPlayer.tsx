@@ -101,8 +101,8 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
 
     useEffect(() => {
         dispatch(setIsDisplayCaptions(displayCaptions || false));
-        dispatch(setCaptionsLanguage(captionLanguage || 'en'))
-    }, [displayCaptions, captionLanguage, dispatch]);
+        dispatch(setCaptionsLanguage(captionLanguage || ''));
+    }, [displayCaptions, captionLanguage, dispatch, mpdSrc]);
 
     useEffect(() => {
         toggleCaptions();

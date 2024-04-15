@@ -14,14 +14,14 @@ export interface DashPlayerProps {
     // Default subtitles language. defalt is english ('en')
     captionLanguage?: string;
 }
-export const DashPlayer = ({ mpdUrl, videoItem, displayCaptions, captionLanguage ='en' }: DashPlayerProps) => {
+export const DashPlayer = ({ mpdUrl, videoItem, displayCaptions, captionLanguage = '' }: DashPlayerProps) => {
     return (
         <Provider store={store}>
-            <ActualDashPlayer 
-            mpdSrc={mpdUrl || videoItem?.src || ''} 
-            captions={videoItem?.captions || []}
-            displayCaptions={displayCaptions}
-            captionLanguage={captionLanguage}
+            <ActualDashPlayer
+                mpdSrc={mpdUrl || videoItem?.src || ''}
+                captions={videoItem?.captions || []}
+                displayCaptions={displayCaptions}
+                captionLanguage={captionLanguage}
             ></ActualDashPlayer>
         </Provider>
     )

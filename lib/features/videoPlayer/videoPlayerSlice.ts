@@ -54,7 +54,7 @@ const initialState: VideoPlayState = {
     isVolumeSliderActive: false,
     volumeSliderLeftPosition:0,
     isDisplayCaptions: false,
-    captionsLanguage: 'en',
+    captionsLanguage: '',
     speed:1
 }
 
