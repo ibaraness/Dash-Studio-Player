@@ -9,6 +9,10 @@ const enSubtitle = new DashPlayerCaption();
 enSubtitle.language = 'en';
 enSubtitle.src = 'http://127.0.0.1:9000/idan/df2f5a0f-f179-4051-9ed7-fbe7cec4ddcc/tunnel_vision.srt';
 
+const hebSubtitle = new DashPlayerCaption();
+hebSubtitle.language = 'Heb';
+hebSubtitle.src = 'http://127.0.0.1:9000/idan/df2f5a0f-f179-4051-9ed7-fbe7cec4ddcc/tunnel_vision.srt';
+
 const videoList: DashVideoItem[] = [
   {
     id: '1',
@@ -30,7 +34,8 @@ const videoList: DashVideoItem[] = [
     id: '4',
     src: 'http://127.0.0.1:9000/idan/df2f5a0f-f179-4051-9ed7-fbe7cec4ddcc/tunnel_vision.mpd',
     captions:[
-      enSubtitle
+      enSubtitle,
+      hebSubtitle
     ],
     title:'Tunnel vision'
   }

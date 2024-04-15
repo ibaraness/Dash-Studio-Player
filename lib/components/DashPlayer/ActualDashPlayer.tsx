@@ -111,27 +111,43 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
     
 
     useEffect(() => {
+        if (cueContainer.current) {
+            player.configure('textDisplayFactory', () => new shaka.text.UITextDisplayer(videoElement, cueContainer.current));
+        }
+    }, [player, videoElement]);
+
+    useEffect(()=>{
         async function loadSubtitle() {
             if (!captions) {
                 subTitleInitialized.current = false;
                 return;
             }
+
+            // get existing text tracks
+            const textTracks = player.getTextTracks();
+
             for (let i = 0; i < captions.length; i++) {
-                const { src, language } = captions[0];
+                const { src, language } = captions[i];
+                const exist = textTracks.find((t:{language: string}) => t.language === language);
+                if(exist){
+                    continue;
+                }
                 await player.addTextTrackAsync(src, language, "subtitles");
                 subTitleInitialized.current = true;
                 toggleCaptions();
             }
         }
 
-        if (captions && loaded) {
-            loadSubtitle();
+        function loadedData(){
+            if (captions && loaded) {
+                loadSubtitle();
+            }
         }
-
-        if (cueContainer.current) {
-            player.configure('textDisplayFactory', () => new shaka.text.UITextDisplayer(videoElement, cueContainer.current));
+        const listener = eventEmitter.addListener(VideoEvent.LoadedData, loadedData);
+        return () => {
+            listener.remove();
         }
-    }, [captions, loaded, toggleCaptions, player, videoElement])
+    })
 
     // *************** [ SRT Caption addition] ****************
 
@@ -145,6 +161,7 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
                 }
                 initialized.current = true;
                 previousSrc.current = mpdSrc;
+                dispatch(setLoaded(false));
                 if (!player.getMediaElement()) {
                     await player.attach(videoElement);
                 }
