@@ -39,9 +39,6 @@ export class DashPlayerCaption {
 
     // SRT or other  mimetype
     mimeType: string = "text/srt"
-
-    // Select between captions and subtitles
-    kind: "captions" | "subtitle" = "captions";
 }
 
 

@@ -117,8 +117,8 @@ const ActualDashPlayer = ({ mpdSrc, captions, displayCaptions, captionLanguage }
                 return;
             }
             for (let i = 0; i < captions.length; i++) {
-                const { src, language, kind } = captions[0];
-                await player.addTextTrackAsync(src, language, kind);
+                const { src, language } = captions[0];
+                await player.addTextTrackAsync(src, language, "subtitles");
                 subTitleInitialized.current = true;
                 toggleCaptions();
             }
